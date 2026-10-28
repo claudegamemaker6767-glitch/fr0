@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="dark light">
+<meta name="robots" content="noindex, nofollow">
+<title>The Treehouse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="app" id="app" hidden>
+  <aside class="side" id="side" aria-label="Rooms">
+    <div class="brand">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true">
+        <rect width="34" height="34" rx="10" fill="var(--panel-2)"/>
+        <path d="M6 16 17 7l11 9" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="10" y="16" width="14" height="10" rx="2" fill="var(--accent)"/>
+        <rect x="15" y="19" width="4" height="4" rx="1" fill="var(--panel-2)"/>
+      </svg>
+      <div><b>The Treehouse</b><small>friends only</small></div>
+    </div>
+    <div class="label">Rooms</div>
+    <nav class="rooms" id="rooms"></nav>
+    <button class="add" id="addRoom" type="button">
+      <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true"><path d="M7 2v10M2 7h10" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      New room
+    </button>
+    <div class="me">
+      <div class="av sm" id="meAv">?</div>
+      <div class="who"><b id="meName">Guest</b><span id="online">connecting</span></div>
+      <button class="linkbtn" id="rename" type="button">Rename</button>
+      <button class="linkbtn" id="leave" type="button">Leave</button>
+    </div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <main class="main">
+    <header class="head">
+      <button class="menu" id="menu" type="button" aria-label="Open rooms">
+        <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 5h12M3 9h12M3 13h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <span class="pip" id="pip" hidden></span>
+      </button>
+      <div class="t">
+        <h1><span class="dot" id="hDot"></span><span id="hName">lobby</span></h1>
+        <p id="hTopic"></p>
+      </div>
+      <span class="conn" id="conn" hidden>Reconnecting…</span>
+    </header>
+    <div class="feed" id="feed" aria-live="polite"></div>
+    <form class="composer" id="composer" autocomplete="off">
+      <div class="field">
+        <textarea id="input" rows="1" maxlength="1000" placeholder="Message the room"></textarea>
+        <button class="send" id="send" type="submit" aria-label="Send message" disabled>
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true"><path d="M3 9.5 15 3l-4.5 12-2.3-5L3 9.5Z" fill="currentColor"/></svg>
+        </button>
+      </div>
+      <div class="hint">Enter to send · Shift+Enter for a new line</div>
+    </form>
+  </main>
+</div>
+
+<!-- Code + name screen: shown until the server accepts the code -->
+<div class="gate" id="gate">
+  <form class="card" id="gateForm" autocomplete="off">
+    <div class="brand">
+      <svg width="40" height="40" viewBox="0 0 34 34" aria-hidden="true">
+        <rect width="34" height="34" rx="10" fill="var(--panel-2)"/>
+        <path d="M6 16 17 7l11 9" fill="none" stroke="var(--accent)" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="10" y="16" width="14" height="10" rx="2" fill="var(--accent)"/>
+        <rect x="15" y="19" width="4" height="4" rx="1" fill="var(--panel-2)"/>
+      </svg>
+      <div><b>The Treehouse</b><small>friends only</small></div>
+    </div>
+    <h2>Got the code?</h2>
+    <p>Type the access code your friend sent you, then pick the name everyone will see.</p>
+    <label for="codeInput">Access code</label>
+    <input id="codeInput" type="text" autocapitalize="off" autocorrect="off" spellcheck="false" maxlength="64" placeholder="e.g. maple-42" required>
+    <label for="gateName">Your name</label>
+    <input id="gateName" type="text" maxlength="24" placeholder="e.g. Jordan" required>
+    <div class="err" id="gateErr" role="alert"></div>
+    <div class="row"><button class="btn primary wide" id="gateGo" type="submit">Come in</button></div>
+  </form>
+</div>
+
+<div class="overlay" id="nameModal" hidden>
+  <form class="card" id="nameForm" autocomplete="off">
+    <h2>Change your name</h2>
+    <p>Your new name shows on messages you send from now on.</p>
+    <label for="nameInput">Display name</label>
+    <input id="nameInput" maxlength="24" placeholder="e.g. Jordan" required>
+    <div class="err" id="nameErr"></div>
+    <div class="row">
+      <button class="btn" id="nameCancel" type="button">Cancel</button>
+      <button class="btn primary" type="submit">Save</button>
+    </div>
+  </form>
+</div>
+
+<div class="overlay" id="roomModal" hidden>
+  <form class="card" id="roomForm" autocomplete="off">
+    <h2>New room</h2>
+    <p>Rooms show up for everyone straight away.</p>
+    <label for="roomName">Room name</label>
+    <input id="roomName" maxlength="24" placeholder="e.g. road-trip" required>
+    <label for="roomTopic">What's it for? (optional)</label>
+    <input id="roomTopic" maxlength="80" placeholder="e.g. Planning the July drive">
+    <div class="err" id="roomErr"></div>
+    <div class="row">
+      <button class="btn" id="roomCancel" type="button">Cancel</button>
+      <button class="btn primary" type="submit">Create room</button>
+    </div>
+  </form>
+</div>
+
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>
